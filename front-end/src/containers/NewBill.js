@@ -15,11 +15,22 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
+
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
+    if (!file) return;
+
+    const fileName = file.name
+    const fileExtension = fileName.split('.').pop().toLowerCase()
+
+    
+    if (!['jpg', 'jpeg', 'png'].includes(fileExtension)) {
+      alert("Seuls les fichiers avec les extensions .jpg, .jpeg et .png sont autorisés.")
+      e.target.value = "" 
+      return
+    }
+
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
@@ -40,6 +51,7 @@ export default class NewBill {
         this.fileName = fileName
       }).catch(error => console.error(error))
   }
+
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
