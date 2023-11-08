@@ -19,10 +19,10 @@ const row = (bill) => {
     `)
   }
 
-const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
-}
-
+  const rows = (data) => {
+    return (data && data.length) ? data.sort((a, b) => Date.parse(a.date) - Date.parse(b.date)).map(bill => row(bill)).join("") : ""
+  }
+  
 export default ({ data: bills, loading, error }) => {
   
   const modal = () => (`
