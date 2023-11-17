@@ -210,3 +210,62 @@ describe("Given I am a user connected as Employee", () => {
 });
 
 
+describe("When an error occurs on API", () => {
+  beforeEach(() => {
+    // Spy on the mockStore's 'bills' method
+    jest.spyOn(mockStore, "bills");
+
+    // Set up localStorage with a user of type 'employee'
+    Object.defineProperty(window, "localeStorage", {
+      value: localStorageMock,
+    });
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({
+        type: "employee",
+        email: "a@a",
+      })
+    );
+  });
+  test("Then should fail with message error 404", async () => {
+    // Mock the 'create' method of 'bills' to reject with an error message
+    mockStore.bills.mockImplementationOnce(() => {
+      return {
+        create: () => {
+          return Promise.reject(new Error("Erreur 404"));
+        },
+      };
+    });
+    // Create an HTML representation of the bills UI with the error message
+
+    const html = BillsUI({ error: "Erreur 404" });
+
+    // Set the document body's HTML to the HTML representation
+    document.body.innerHTML = html;
+    const message = await screen.getByText(/Erreur 404/);
+    expect(message).toBeTruthy();
+  });
+  test("Then should fail with message error 500", async () => {
+    // Mock the 'create' method of 'bills' to reject with an error message
+    mockStore.bills.mockImplementationOnce(() => {
+      return {
+        create: () => {
+          return Promise.reject(new Error("Erreur 500"));
+        },
+      };
+    });
+
+    // Create an HTML representation of the bills UI with the error message
+
+    const html = BillsUI({ error: "Erreur 500" });
+
+    // Set the document body's HTML to the HTML representation
+    document.body.innerHTML = html;
+
+    // Find the error message in the rendered HTML
+    const message = await screen.getByText(/Erreur 500/);
+
+    // Expect that the error message is found in the DOM
+    expect(message).toBeTruthy();
+  });
+});
