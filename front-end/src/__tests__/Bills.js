@@ -166,4 +166,47 @@ describe("Given I am connected as an employee", () => {
 });
 
 
+// Test d'intégration GET
+
+describe("Given I am a user connected as Employee", () => {
+  describe("When I navigate to Bills", () => {
+    // Test case 1: Fetches bills from mock API GET
+    test("fetches bills from mock API GET", async () => {
+      localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.append(root);
+      router();
+      window.onNavigate(ROUTES_PATH.Bills);
+      await waitFor(() => screen.getByText("Mes notes de frais"));
+    
+      const content1 = screen.getByText("bills1");
+      expect(content1).toBeDefined();
+      const content2 = screen.getByText("bills2");
+      expect(content2).toBeDefined();
+      const content3 = screen.getByText("bills3");
+      expect(content3).toBeTruthy();
+      const content4 = screen.getByText("bills4");
+      expect(content4).toBeDefined();
+      //number check
+      expect(screen.getAllByTestId("icon-eye").length).toEqual(4);
+      //modal for the attachment file to th bill
+      expect(screen.getByText("Justificatif")).toBeVisible();
+      //new Bill button
+      expect(screen.getByTestId("btn-new-bill")).toHaveTextContent(
+        "Nouvelle note de frais"
+      );
+      //body with bills and defined
+      expect(screen.getByTestId("tbody")).toBeDefined();
+      //body with the four bills
+      expect(screen.getByTestId("tbody")).toHaveTextContent("bills1");
+      expect(screen.getByTestId("tbody")).toHaveTextContent("bills2");
+      expect(screen.getByTestId("tbody")).toHaveTextContent("bills3");
+      expect(screen.getByTestId("tbody")).toHaveTextContent("bills4");
+    });
+  });
+
+ 
+});
+
 
